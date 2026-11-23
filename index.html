@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Wrexham Italy Match Centre 3.1</title>
+<title>Wrexham Italy Match Centre 3.2</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#10151c;color:#f6f8fc;font:15px Arial,sans-serif;padding:25px 12px;text-align:center}
 main{max-width:1080px;margin:auto}h1{color:#ff4949;font-size:clamp(23px,4vw,34px);margin:10px 0 22px}
@@ -46,6 +46,32 @@ button:disabled{opacity:.55;cursor:wait}
 #lastUpdated{font-size:12px;color:#aebed2;margin:8px 0}
 @media(max-width:620px){body{padding:15px 8px}.toolbar{width:100%}.scoreboard{gap:8px;padding:12px 7px}.scoreboard h2{font-size:clamp(16px,4.6vw,24px)}.crest{width:35px;height:35px}.pitch{border-width:2px}.player{width:19px;height:19px;font-size:9px}.player-name{font-size:8px;max-width:47px;padding:2px}.timeline li{flex-wrap:wrap;gap:7px}.timeline .minute{flex:0 0 42px}.timeline .eventtext{flex-basis:100%}.panel{padding:12px}}
 @media(prefers-reduced-motion:reduce){.live-pill{animation:none}}
+
+/* 3.2: enhanced match dashboard */
+.scoreboard{max-width:920px;padding:22px 25px;box-shadow:0 12px 35px #0004}
+.scoreboard h2{font-size:clamp(23px,3.8vw,39px)}
+.crest{width:72px;height:72px}
+.pitch{margin-top:20px}
+.player{width:clamp(25px,3.3vw,40px);height:clamp(25px,3.3vw,40px);font-size:clamp(11px,1.5vw,15px)}
+.player-name{max-width:110px;font-size:clamp(10px,1.15vw,12px);overflow:visible;text-overflow:clip}
+.section-heading{text-align:left;font-size:19px;margin:4px 0 14px}
+.stats-grid{display:grid;gap:13px}
+.stat-row{display:grid;grid-template-columns:65px minmax(0,1fr) 65px;align-items:center;gap:14px}
+.stat-value{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.stat-label{font-size:13px;color:#dce5f3;margin-bottom:5px}
+.stat-track{height:9px;display:flex;border-radius:20px;overflow:hidden;background:#394555}
+.stat-home{background:#ef4655}.stat-away{background:#438bfa}
+.stat-empty{color:#bac9dc;font-size:14px;line-height:1.6}
+.stats-legend{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:#cdd9e8;margin-bottom:14px}
+.legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.timeline li{position:relative;padding:14px 16px;border-radius:10px}
+.timeline li.event-goal{border-color:#53b78b;background:#18382e}
+.timeline li.event-goal .tag{background:#226448;color:#fff;font-weight:800}
+.timeline li.event-red .tag{background:#822c3b;color:#fff}
+.timeline li.event-home{border-left:5px solid #ef4655}
+.timeline li.event-away{border-left:5px solid #438bfa}
+.timeline .eventtext{line-height:1.6}
+@media(max-width:620px){.scoreboard{padding:12px 8px}.crest{width:38px;height:38px}.player{width:20px;height:20px;font-size:9px}.player-name{max-width:52px;overflow:hidden;text-overflow:ellipsis;font-size:8px}.stat-row{grid-template-columns:40px minmax(0,1fr) 40px;gap:7px}.timeline li{padding:10px 9px}}
 </style>
 </head>
 <body><main>
@@ -58,6 +84,7 @@ button:disabled{opacity:.55;cursor:wait}
 </div>
 <div class="pitch-caption">Schema tattico illustrativo: non rappresenta il tracciamento dei giocatori in tempo reale.</div>
 <div class="panel" id="summary">Seleziona una partita.</div>
+<section class="panel" id="statsPanel" aria-labelledby="statsTitle"><h3 class="section-heading" id="statsTitle">Statistiche della partita</h3><div id="stats" class="stat-empty">In attesa dei dati.</div></section>
 <div class="teams">
 <section class="panel"><h3 id="homeTitle">Squadra di casa</h3><div id="homeList"></div><div id="homeBench"></div></section>
 <section class="panel"><h3 id="awayTitle">Squadra ospite</h3><div id="awayList"></div><div id="awayBench"></div></section>
@@ -132,9 +159,51 @@ function renderEvents(m){
  }).join('')+'</ul>':'<p class="muted">Nessun evento disponibile.</p>';
 }
 
+
+function statsFor(m){
+ const source=m.statistics||m.stats||m.match_statistics;
+ if(!source)return [];
+ const labels=[['Possesso palla',['ball possession','possession','possesso palla']],['Tiri totali',['total shots','shots total','shots','tiri totali']],['Tiri in porta',['shots on goal','shots on target','tiri in porta']],['Calci d’angolo',['corner kicks','corners','calci d’angolo']],['Falli',['fouls','fouls committed','falli']]];
+ const entries=[];
+ if(Array.isArray(source)){
+  for(const item of source){
+   const key=val(item.type||item.name||item.statistic||item.stat_type).toLowerCase();
+   const h=item.home??item.home_value??item.home_stat;
+   const a=item.away??item.away_value??item.away_stat;
+   if(key && h!==undefined && a!==undefined)entries.push({key,h,a});
+  }
+ }else if(source && typeof source==='object'){
+  for(const [key,value] of Object.entries(source)){
+   if(value && typeof value==='object' && !Array.isArray(value)){
+    const h=value.home??value.home_value;const a=value.away??value.away_value;
+    if(h!==undefined && a!==undefined)entries.push({key:key.toLowerCase(),h,a});
+   }
+  }
+ }
+ return labels.map(([label,aliases])=>{
+  const match=entries.find(e=>aliases.includes(e.key));
+  if(!match)return null;
+  const h=Number.parseFloat(String(match.h).replace(',','.'));
+  const a=Number.parseFloat(String(match.a).replace(',','.'));
+  if(!Number.isFinite(h)||!Number.isFinite(a)||h<0||a<0)return null;
+  return {label,h,a,homeText:val(match.h),awayText:val(match.a)};
+ }).filter(Boolean);
+}
+function renderStats(m){
+ const rows=statsFor(m);
+ const el=$('stats');
+ if(!rows.length){el.className='stat-empty';el.textContent='Statistiche non disponibili nei dati trasmessi dall’API per questa partita. Nessun valore viene stimato.';return;}
+ el.className='stats-grid';
+ el.innerHTML=`<div class="stats-legend"><span><span class="legend-dot" style="background:#ef4655"></span>${safe(name(m,'home'))}</span><span><span class="legend-dot" style="background:#438bfa"></span>${safe(name(m,'away'))}</span></div>`+
+ rows.map(r=>{
+  const total=r.h+r.a;const pct=total>0?r.h/total*100:50;
+  return `<div class="stat-row"><span class="stat-value">${safe(r.homeText)}</span><div><div class="stat-label">${safe(r.label)}</div><div class="stat-track" role="img" aria-label="${safe(r.label)}: ${safe(r.homeText)} contro ${safe(r.awayText)}"><div class="stat-home" style="width:${pct}%"></div><div class="stat-away" style="width:${100-pct}%"></div></div></div><span class="stat-value">${safe(r.awayText)}</span></div>`;
+ }).join('');
+}
+
 function render(){
  const m=matches.find(x=>val(x.match_id)===selectedId);
- if(!m){$('score').textContent='Nessuna partita disponibile';$('status').textContent='';$('message').textContent='';return;}
+ if(!m){$('score').textContent='Nessuna partita disponibile';$('status').textContent='';$('message').textContent='';$('stats').textContent='Nessuna partita selezionata.';return;}
  const h=name(m,'home'),a=name(m,'away'),finished=isFinished(m),live=isLive(m);
  const hs=val(m.match_hometeam_score),as=val(m.match_awayteam_score);
  $('score').textContent=`${h} ${finished||live?(hs||'0')+' - '+(as||'0'):'– - –'} ${a}`;
@@ -153,6 +222,7 @@ function render(){
  drawSide(m,'home');drawSide(m,'away');
  $('message').classList.remove('error');
  $('message').textContent=home.length<11||away.length<11?'Formazioni non ancora complete: il campo rimane vuoto per le squadre senza 11 titolari confermati.':'Disposizione tattica illustrativa basata sui titolari e sul modulo comunicati dall’API.';
+ renderStats(m);
  renderEvents(m);
 }
 async function load(){
