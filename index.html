@@ -1,27 +1,133 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Wrexham Italy Match Centre</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wrexham Italy Match Centre 2.0</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#10151c;color:#fff;font-family:Arial,sans-serif;text-align:center;padding:24px 12px}.container{max-width:850px;margin:auto}h1{color:#ff4040;font-size:clamp(23px,5vw,36px)}.score{font-size:clamp(22px,5vw,38px);font-weight:bold;margin:20px 0 8px}.clock{color:#ffcc66;font-size:21px}.toolbar{margin:18px auto;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}select,button{background:#252d38;color:white;border:1px solid #687382;border-radius:7px;padding:10px;font-size:15px;max-width:100%}button{cursor:pointer}.pitch{position:relative;width:100%;aspect-ratio:105/68;background:repeating-linear-gradient(90deg,#176c38 0%,#176c38 10%,#207c43 10%,#207c43 20%);border:3px solid white;margin-top:25px;overflow:hidden}.midline{position:absolute;left:50%;height:100%;border-left:2px solid white}.circle{position:absolute;width:18%;aspect-ratio:1;border:2px solid white;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%)}.area{position:absolute;top:20%;height:60%;width:16%;border:2px solid white}.left{left:0;border-left:0}.right{right:0;border-right:0}.ball{position:absolute;left:50%;top:50%;font-size:clamp(16px,3vw,27px);transform:translate(-50%,-50%);transition:left 1.8s ease,top 1.8s ease;z-index:2}.player{position:absolute;width:2.6%;aspect-ratio:1;border-radius:50%;border:1px solid white;transform:translate(-50%,-50%);transition:left 1.8s ease,top 1.8s ease}.red{background:#e52232}.blue{background:#2676ee}.status{margin-top:20px;padding:14px;background:#252d38;border-radius:8px;font-size:18px}.note{color:#aab5c3;font-size:13px;margin-top:15px;line-height:1.5}.error{color:#ff9d9d}.info{color:#b8c7d8;font-size:14px;margin-top:10px}
+*{box-sizing:border-box}body{margin:0;background:#10151c;color:#f6f8fc;font:15px Arial,sans-serif;padding:25px 12px;text-align:center}
+main{max-width:1080px;margin:auto}h1{color:#ff4949;font-size:clamp(23px,4vw,34px);margin:10px 0 22px}
+.toolbar{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:9px}select,button{background:#27313f;color:#fff;border:1px solid #596679;border-radius:6px;padding:11px;font-size:14px}
+select{max-width:100%;width:min(370px,90vw)}button{cursor:pointer}button:hover{background:#3b4b60}
+h2{font-size:clamp(22px,4vw,36px);margin:20px 0 7px}.status{color:#ffcc68;font-size:18px}.meta,.muted{color:#aebed2;font-size:13px;margin:9px}
+.pitch{position:relative;width:100%;aspect-ratio:105/68;margin:23px auto 16px;border:3px solid white;overflow:hidden;background:repeating-linear-gradient(90deg,#176b3c 0%,#176b3c 10%,#217d49 10%,#217d49 20%)}
+.half{position:absolute;left:50%;top:0;height:100%;border-left:2px solid white}.circle{position:absolute;left:50%;top:50%;width:18%;aspect-ratio:1;border:2px solid white;border-radius:50%;transform:translate(-50%,-50%)}
+.boxleft,.boxright{position:absolute;top:20%;height:60%;width:16%;border:2px solid white}.boxleft{left:0;border-left:0}.boxright{right:0;border-right:0}
+.goalleft,.goalright{position:absolute;top:36%;height:28%;width:6%;border:2px solid white}.goalleft{left:0;border-left:0}.goalright{right:0;border-right:0}
+.player{position:absolute;transform:translate(-50%,-50%);width:clamp(22px,3.2vw,38px);height:clamp(22px,3.2vw,38px);border:1.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:clamp(10px,1.5vw,15px);box-shadow:0 2px 6px #0009;cursor:help}
+.home{background:#db2534}.away{background:#236be0}.player-name{position:absolute;top:100%;left:50%;transform:translateX(-50%);font-size:clamp(8px,1.1vw,12px);font-weight:normal;white-space:nowrap;text-shadow:0 1px 4px #000,0 1px 3px #000}
+.panel{background:#252e3a;border-radius:7px;padding:14px;margin:12px 0}.teams{display:grid;grid-template-columns:1fr 1fr;gap:14px;text-align:left}.teams h3{margin:0 0 12px}.teams ol{margin:0;padding-left:28px;line-height:1.9}.teams li{padding-left:3px}.events{text-align:left}.events ul{padding-left:20px;line-height:1.8}
+.notice{color:#f7ce78;font-size:13px}.error{color:#ff9999}.footer{color:#aebed2;font-size:12px;line-height:1.6;margin:20px 0}
+@media(max-width:620px){.teams{grid-template-columns:1fr}.player-name{font-size:8px}.pitch{margin-top:18px}.player{width:22px;height:22px;font-size:10px}}
 </style>
 </head>
-<body><main class="container"><h1>WREXHAM ITALY MATCH CENTRE</h1><div class="toolbar"><label for="matchSelect">Partita: </label><select id="matchSelect" aria-label="Seleziona partita"><option>Caricamento...</option></select><button id="refresh">Aggiorna</button></div><div class="score" id="score">Caricamento partite...</div><div class="clock" id="clock">In attesa dei dati</div><div class="info" id="details"></div><div class="pitch" id="pitch"><div class="midline"></div><div class="circle"></div><div class="area left"></div><div class="area right"></div><div class="ball" id="ball">⚽</div></div><div class="status" id="status">Connessione ai risultati...</div><div class="note">I risultati e gli stati provengono da API-Football tramite Cloudflare. Le animazioni sul campo sono illustrative e NON rappresentano la posizione reale dei calciatori o del pallone.</div></main>
+<body><main>
+<h1>WREXHAM ITALY MATCH CENTRE</h1>
+<div class="toolbar"><label for="matchSelect">Partita:</label><select id="matchSelect"><option>Caricamento...</option></select><button id="refresh">Aggiorna</button></div>
+<h2 id="score">Caricamento...</h2><div id="status" class="status"></div><div id="meta" class="meta"></div>
+<div id="message" class="notice" aria-live="polite"></div>
+<div class="pitch" id="pitch" aria-label="Schema tattico illustrativo">
+<div class="half"></div><div class="circle"></div><div class="boxleft"></div><div class="boxright"></div><div class="goalleft"></div><div class="goalright"></div>
+</div>
+<div class="panel" id="summary">Seleziona una partita.</div>
+<div class="teams">
+<section class="panel"><h3 id="homeTitle">Squadra di casa</h3><div id="homeList"></div><div id="homeBench"></div></section>
+<section class="panel"><h3 id="awayTitle">Squadra ospite</h3><div id="awayList"></div><div id="awayBench"></div></section>
+</div>
+<section class="panel events"><h3>Eventi della partita</h3><div id="events">In attesa dei dati.</div></section>
+<div class="footer">Risultati, formazioni ed eventi: API-Football tramite Cloudflare. Le posizioni sul campo sono uno schema tattico illustrativo, NON un tracciamento reale dei giocatori o del pallone. Aggiornamento automatico ogni 60 secondi.</div>
+</main>
 <script>
 'use strict';
 const API='https://wrexham-italy-api.raffaelecautiero92.workers.dev/';
-const pitch=document.getElementById('pitch'),ball=document.getElementById('ball'),statusBox=document.getElementById('status'),clock=document.getElementById('clock'),score=document.getElementById('score'),details=document.getElementById('details'),select=document.getElementById('matchSelect');
-let matches=[],selectedId=null,step=0;
-const players=[];
-for(let i=0;i<10;i++){const p=document.createElement('div');p.className='player '+(i<5?'red':'blue');pitch.appendChild(p);players.push(p)}
-const actions=[{x:25,y:50},{x:48,y:35},{x:75,y:30},{x:88,y:48},{x:55,y:60},{x:22,y:65}];
-function animate(){const a=actions[step++%actions.length];ball.style.left=a.x+'%';ball.style.top=a.y+'%';players.forEach((p,i)=>{const dx=((i*17)%29)-14,dy=((i*23)%45)-22,base=i<5?a.x-13:a.x+13;p.style.left=Math.max(4,Math.min(96,base+dx))+'%';p.style.top=Math.max(5,Math.min(95,a.y+dy))+'%'})}
-function value(v){return v===null||v===undefined||v===''?'–':String(v)}
-function formatDate(m){const date=m.match_date,time=m.match_time;if(!date)return 'Data da confermare';const parts=date.split('-');return parts.length===3?`${parts[2]}/${parts[1]}/${parts[0]}${time?' · '+time:''}`:date}
-function state(m){const s=String(m.match_status||'').trim();const live=String(m.match_live||'0')==='1';if(live)return '🔴 IN DIRETTA';if(!s||s==='Not Started'||s==='NS')return 'Da giocare';if(['Finished','FT','After Pen.','After Extra Time','AET'].includes(s))return 'Terminata';return s}
-function render(){const m=matches.find(x=>String(x.match_id)===String(selectedId));if(!m){score.textContent='Nessuna partita disponibile';clock.textContent='';details.textContent='';statusBox.textContent='Nessun dato';return}const home=m.match_hometeam_name||'Casa',away=m.match_awayteam_name||'Trasferta';const hasScores=m.match_hometeam_score!==''&&m.match_hometeam_score!=null&&m.match_awayteam_score!==''&&m.match_awayteam_score!=null;score.textContent=`${home} ${hasScores?m.match_hometeam_score:'–'} - ${hasScores?m.match_awayteam_score:'–'} ${away}`;clock.textContent=state(m);details.textContent=`${formatDate(m)} · ${m.match_stadium||'Stadio non indicato'}`;statusBox.textContent=`${state(m)} · ${home} vs ${away}`}
-function populate(){const old=selectedId;select.replaceChildren();for(const m of matches){const option=document.createElement('option');option.value=String(m.match_id);option.textContent=`${formatDate(m)} · ${m.match_hometeam_name||'?'} - ${m.match_awayteam_name||'?'}`;select.appendChild(option)}if(matches.some(m=>String(m.match_id)===String(old)))selectedId=old;else{const live=matches.find(m=>String(m.match_live)==='1');const upcoming=matches.find(m=>!m.match_status||m.match_status==='Not Started'||m.match_status==='NS');selectedId=String((live||upcoming||matches[0])?.match_id||'')}select.value=selectedId;render()}
-async function load(){document.getElementById('refresh').disabled=true;try{const res=await fetch(API,{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();if(data.error)throw new Error(typeof data.error==='string'?data.error:'Errore API');if(!Array.isArray(data.matches))throw new Error('Formato dati inatteso');matches=data.matches;populate()}catch(e){if(matches.length){statusBox.textContent='Aggiornamento non riuscito: '+e.message+' · Visualizzazione ultimi dati disponibili';statusBox.classList.add('error')}else{score.textContent='Impossibile caricare le partite';clock.textContent='';statusBox.textContent='Errore: '+e.message;statusBox.classList.add('error')}}finally{document.getElementById('refresh').disabled=false}}
-select.addEventListener('change',()=>{selectedId=select.value;statusBox.classList.remove('error');render()});document.getElementById('refresh').addEventListener('click',load);animate();setInterval(animate,3500);setInterval(load,30000);load();
+const $=id=>document.getElementById(id);
+let matches=[],selectedId=null,requestInFlight=false;
+const val=x=>x===null||x===undefined?'':String(x).trim();
+const safe=x=>{const d=document.createElement('span');d.textContent=val(x);return d.innerHTML;};
+const dateText=m=>{const d=val(m.match_date).split('-');return d.length===3?`${d[2]}/${d[1]}/${d[0]}`:val(m.match_date);};
+function isFinished(m){return /finished|after pen|full.time|ft\b/i.test(val(m.match_status));}
+function isLive(m){return val(m.match_live)==='1'||/half time|in play|live|1st half|2nd half|extra time/i.test(val(m.match_status));}
+function state(m){if(isFinished(m))return 'Terminata';if(isLive(m))return '🔴 IN DIRETTA';return 'Da giocare';}
+function formation(m,side){return val(m[side==='home'?'match_hometeam_system':'match_awayteam_system']);}
+function getLineup(m,side){const group=m.lineup?.[side]||m.lineups?.[side]||{};return Array.isArray(group.starting_lineups)?group.starting_lineups:[];}
+function getBench(m,side){const group=m.lineup?.[side]||m.lineups?.[side]||{};return Array.isArray(group.substitutes)?group.substitutes:[];}
+function name(m,side){return val(m[side==='home'?'match_hometeam_name':'match_awayteam_name'])||'Squadra';}
+function listPlayers(items){if(!items.length)return '<p class="muted">Non ancora disponibili.</p>';return '<ol>'+items.map(p=>`<li><strong>${safe(p.lineup_number||'–')}</strong> ${safe(p.lineup_player||'Sconosciuto')}</li>`).join('')+'</ol>';}
+function positions(formationText){
+  const parts=formationText.split('-').map(Number).filter(n=>Number.isInteger(n)&&n>0);
+  if(parts.length<2||parts.reduce((a,b)=>a+b,0)!==10)return [4,4,2];
+  return parts;
+}
+function drawSide(m,side){
+ const lineup=getLineup(m,side);
+ if(lineup.length<11)return;
+ // API-Football's lineup_position is an ordering index, not a live pitch coordinate.
+ const sorted=[...lineup].sort((a,b)=>(Number(a.lineup_position)||99)-(Number(b.lineup_position)||99)).slice(0,11);
+ const rows=positions(formation(m,side));
+ const coords=[{x:8,y:50}];
+ rows.forEach((count,r)=>{
+   for(let j=0;j<count;j++)coords.push({x:19+(r+1)*62/(rows.length+1),y:(j+1)*100/(count+1)});
+ });
+ sorted.forEach((p,i)=>{
+   const c=coords[i];if(!c)return;
+   const x=side==='home'?c.x:100-c.x;
+   const el=document.createElement('div');el.className='player '+side;
+   el.style.left=x+'%';el.style.top=c.y+'%';
+   el.title=`${val(p.lineup_player)} · N. ${val(p.lineup_number)}`;
+   const number=document.createElement('span');number.textContent=val(p.lineup_number)||'–';el.appendChild(number);
+   const label=document.createElement('span');label.className='player-name';
+   const words=val(p.lineup_player).split(/\s+/);label.textContent=words.length>1?words.slice(-1)[0]:words[0];
+   el.appendChild(label);$('pitch').appendChild(el);
+ });
+}
+function renderEvents(m){
+ const out=[];
+ const goals=Array.isArray(m.goalscorer)?m.goalscorer:[];
+ goals.forEach(g=>out.push({time:val(g.time),text:`⚽ ${val(g.home_scorer)||val(g.away_scorer)||'Marcatore non indicato'}${val(g.info)?' · '+val(g.info):''}`}));
+ const cards=Array.isArray(m.cards)?m.cards:[];
+ cards.forEach(c=>out.push({time:val(c.time),text:`${/red/i.test(val(c.card))?'🟥':'🟨'} ${val(c.home_fault)||val(c.away_fault)||'Giocatore non indicato'} · ${val(c.card)}`}));
+ const subs=m.substitutions||{};
+ ['home','away'].forEach(side=>(Array.isArray(subs[side])?subs[side]:[]).forEach(s=>out.push({time:val(s.time),text:`🔄 ${name(m,side)}: ${val(s.substitution)||'Sostituzione'}`})));
+ out.sort((a,b)=>(parseInt(a.time)||0)-(parseInt(b.time)||0));
+ $('events').innerHTML=out.length?'<ul>'+out.map(e=>`<li><strong>${safe(e.time)}'</strong> ${safe(e.text)}</li>`).join('')+'</ul>':'<p class="muted">Nessun evento disponibile.</p>';
+}
+function render(){
+ const m=matches.find(x=>val(x.match_id)===selectedId);
+ if(!m){$('score').textContent='Nessuna partita disponibile';$('status').textContent='';$('message').textContent='';return;}
+ const h=name(m,'home'),a=name(m,'away'),finished=isFinished(m),live=isLive(m);
+ const hs=val(m.match_hometeam_score),as=val(m.match_awayteam_score);
+ $('score').textContent=`${h} ${finished||live?(hs||'0')+' - '+(as||'0'):'– - –'} ${a}`;
+ $('status').textContent=state(m);
+ $('meta').textContent=[dateText(m),val(m.match_time),val(m.match_stadium)].filter(Boolean).join(' · ');
+ $('summary').textContent=`${state(m)} · ${h} vs ${a}`;
+ document.querySelectorAll('.player').forEach(p=>p.remove());
+ const home=getLineup(m,'home'),away=getLineup(m,'away');
+ $('homeTitle').textContent=h+(formation(m,'home')?' · '+formation(m,'home'):'');
+ $('awayTitle').textContent=a+(formation(m,'away')?' · '+formation(m,'away'):'');
+ $('homeList').innerHTML='<h4>Titolari</h4>'+listPlayers(home);
+ $('awayList').innerHTML='<h4>Titolari</h4>'+listPlayers(away);
+ $('homeBench').innerHTML='<h4>Panchina</h4>'+listPlayers(getBench(m,'home'));
+ $('awayBench').innerHTML='<h4>Panchina</h4>'+listPlayers(getBench(m,'away'));
+ drawSide(m,'home');drawSide(m,'away');
+ $('message').textContent=home.length<11||away.length<11?'Formazioni non ancora complete: il campo rimane vuoto per le squadre senza 11 titolari confermati.':'Disposizione tattica illustrativa basata sui titolari e sul modulo comunicati dall’API.';
+ renderEvents(m);
+}
+async function load(){
+ if(requestInFlight)return;requestInFlight=true;$('refresh').disabled=true;
+ try{
+  const response=await fetch(API,{cache:'no-store'});if(!response.ok)throw Error('HTTP '+response.status);
+  const data=await response.json();if(data.error)throw Error(data.details||data.error);
+  if(!Array.isArray(data.matches))throw Error('Formato delle partite non valido');
+  matches=data.matches;
+  const select=$('matchSelect'),previous=selectedId;
+  select.replaceChildren();
+  for(const m of matches){const o=document.createElement('option');o.value=val(m.match_id);o.textContent=`${dateText(m)} · ${val(m.match_time)} · ${name(m,'home')} - ${name(m,'away')}`;select.appendChild(o);}
+  selectedId=matches.some(m=>val(m.match_id)===previous)?previous:
+    val((matches.find(m=>!isFinished(m))||matches[matches.length-1]||{}).match_id);
+  select.value=selectedId;render();
+ }catch(err){$('message').textContent='Impossibile aggiornare i dati: '+err.message;$('message').classList.add('error');}
+ finally{requestInFlight=false;$('refresh').disabled=false;}
+}
+$('matchSelect').addEventListener('change',e=>{selectedId=e.target.value;render();});
+$('refresh').addEventListener('click',load);
+load();setInterval(load,60000);
 </script></body></html>
