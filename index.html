@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Wrexham Italy Match Centre 3.0</title>
+<title>Wrexham Italy Match Centre 3.1</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#10151c;color:#f6f8fc;font:15px Arial,sans-serif;padding:25px 12px;text-align:center}
 main{max-width:1080px;margin:auto}h1{color:#ff4949;font-size:clamp(23px,4vw,34px);margin:10px 0 22px}
@@ -19,13 +19,40 @@ h2{font-size:clamp(22px,4vw,36px);margin:20px 0 7px}.status{color:#ffcc68;font-s
 .notice{color:#f7ce78;font-size:13px}.error{color:#ff9999}.footer{color:#aebed2;font-size:12px;line-height:1.6;margin:20px 0}
 @media(max-width:620px){.teams{grid-template-columns:1fr}.player-name{font-size:8px}.pitch{margin-top:18px}.player{width:22px;height:22px;font-size:10px}}
 .scoreboard{display:flex;justify-content:center;align-items:center;gap:15px;margin:18px auto 6px}.crest{width:54px;height:54px;object-fit:contain;display:none}.live-pill{display:inline-block;background:#b51d32;color:white;border-radius:30px;padding:5px 12px;font-weight:800;animation:pulse 2s infinite}@keyframes pulse{50%{opacity:.6}}.pitch{border-radius:5px;box-shadow:0 12px 35px #0005}.player{z-index:2}.player-name{max-width:78px;overflow:hidden;text-overflow:ellipsis;background:#10151cdd;padding:2px 4px;border-radius:4px;top:105%;font-size:10px}.player.home{background:#ce2435}.player.away{background:#2466d6}.timeline{list-style:none;padding:0!important;display:flex;flex-direction:column;gap:8px}.timeline li{display:flex;align-items:center;gap:12px;background:#18212c;border:1px solid #394453;border-radius:8px;padding:11px 13px;line-height:1.45}.timeline .minute{flex:0 0 52px;color:#ffcf74;font-weight:800}.timeline .eventtext{flex:1}.timeline .tag{font-size:11px;color:#d2dfed;background:#364456;padding:3px 8px;border-radius:12px}.pitch-caption{font-size:12px;color:#c0cee0;margin-top:-8px;margin-bottom:14px}@media(max-width:620px){.crest{width:32px;height:32px}.scoreboard{gap:6px}.player-name{max-width:46px;font-size:8px}.timeline li{padding:8px}}
+
+/* Match Centre 3.1: visual refresh */
+:root{color-scheme:dark;--surface:#202b39;--line:#3b4a5e;--accent:#ff515c}
+body{background:radial-gradient(ellipse at 50% 0%,#1b2635 0%,#10151c 58%);line-height:1.5}
+main{max-width:1100px}h1{letter-spacing:1.5px;text-shadow:0 2px 22px #ff49492b}
+.toolbar{background:#1c2633;border:1px solid #344254;border-radius:12px;padding:12px;width:fit-content;max-width:100%;margin:auto}
+select:focus-visible,button:focus-visible{outline:3px solid #ffcc68;outline-offset:3px}
+button:disabled{opacity:.55;cursor:wait}
+.scoreboard{background:#1b2532;border:1px solid #354459;border-radius:14px;padding:14px 18px;max-width:850px;gap:20px}
+.scoreboard h2{margin:0;line-height:1.2}.crest{width:64px;height:64px}
+.status{margin:10px auto}.meta{font-size:14px}.notice{min-height:20px}
+.pitch{max-width:1000px;border-color:#e9f2ef;box-shadow:0 16px 42px #0007}
+.player{width:clamp(23px,3vw,36px);height:clamp(23px,3vw,36px);border:2px solid #fff;box-shadow:0 2px 8px #000a;z-index:3}
+.player-name{top:112%;font-size:clamp(9px,1.1vw,12px);max-width:92px;padding:3px 5px;background:#0b1421ee;font-weight:700;pointer-events:none}
+.player:focus-visible{outline:3px solid #ffcf74;outline-offset:3px}
+.panel{background:var(--surface);border:1px solid #344457;border-radius:12px;padding:18px}
+.teams{gap:16px}.teams h3{font-size:19px;border-bottom:1px solid #405067;padding-bottom:10px}
+.teams h4{color:#ffcf74;margin-bottom:8px}.teams ol{line-height:2}
+.timeline{gap:10px}.timeline li{border-left:4px solid #66758a;transition:background .15s}
+.timeline li.event-home{border-left-color:#e63a4a}.timeline li.event-away{border-left-color:#3c88f0}
+.timeline li.event-goal{background:#263b33}.timeline li.event-red{background:#3b252e}
+.timeline .minute{font-size:15px}.timeline .tag{white-space:nowrap}
+.event-team{font-weight:700;margin-right:7px}.event-home .event-team{color:#ff818b}.event-away .event-team{color:#83b7ff}
+.live-pill{box-shadow:0 0 0 4px #b51d322b}
+#lastUpdated{font-size:12px;color:#aebed2;margin:8px 0}
+@media(max-width:620px){body{padding:15px 8px}.toolbar{width:100%}.scoreboard{gap:8px;padding:12px 7px}.scoreboard h2{font-size:clamp(16px,4.6vw,24px)}.crest{width:35px;height:35px}.pitch{border-width:2px}.player{width:19px;height:19px;font-size:9px}.player-name{font-size:8px;max-width:47px;padding:2px}.timeline li{flex-wrap:wrap;gap:7px}.timeline .minute{flex:0 0 42px}.timeline .eventtext{flex-basis:100%}.panel{padding:12px}}
+@media(prefers-reduced-motion:reduce){.live-pill{animation:none}}
 </style>
 </head>
 <body><main>
 <h1>WREXHAM ITALY MATCH CENTRE</h1>
 <div class="toolbar"><label for="matchSelect">Partita:</label><select id="matchSelect"><option>Caricamento...</option></select><button id="refresh">Aggiorna</button></div>
 <div class="scoreboard"><img class="crest" id="homeCrest" alt="Stemma squadra di casa"><h2 id="score">Caricamento...</h2><img class="crest" id="awayCrest" alt="Stemma squadra ospite"></div><div id="status" class="status"></div><div id="meta" class="meta"></div>
-<div id="message" class="notice" aria-live="polite"></div>
+<div id="message" class="notice" aria-live="polite"></div><div id="lastUpdated" aria-live="polite"></div>
 <div class="pitch" id="pitch" aria-label="Schema tattico illustrativo">
 <div class="half"></div><div class="circle"></div><div class="boxleft"></div><div class="boxright"></div><div class="goalleft"></div><div class="goalright"></div>
 </div>
@@ -75,7 +102,7 @@ function drawSide(m,side){
    const x=side==='home'?c.x:100-c.x;
    const el=document.createElement('div');el.className='player '+side;
    el.style.left=x+'%';el.style.top=c.y+'%';
-   el.title=`${val(p.lineup_player)} · N. ${val(p.lineup_number)}`;
+   el.title=`${val(p.lineup_player)} · N. ${val(p.lineup_number)}`;el.setAttribute('aria-label',el.title);el.tabIndex=0;
    const number=document.createElement('span');number.textContent=val(p.lineup_number)||'–';el.appendChild(number);
    const label=document.createElement('span');label.className='player-name';
    const words=val(p.lineup_player).split(/\s+/);label.textContent=words.length>1?words.slice(-1)[0]:words[0];
@@ -85,14 +112,26 @@ function drawSide(m,side){
 function renderEvents(m){
  const out=[];
  const goals=Array.isArray(m.goalscorer)?m.goalscorer:[];
- goals.forEach(g=>out.push({time:val(g.time),type:'⚽ Gol',text:[val(g.home_scorer)||val(g.away_scorer)||'Marcatore non indicato',val(g.info)].filter(Boolean).join(' · ')}));
+ goals.forEach(g=>{
+  const side=val(g.home_scorer)?'home':val(g.away_scorer)?'away':'';
+  out.push({time:val(g.time),kind:'goal',side,type:'⚽ Gol',text:[val(g.home_scorer)||val(g.away_scorer)||'Marcatore non indicato',val(g.info)].filter(Boolean).join(' · ')});
+ });
  const cards=Array.isArray(m.cards)?m.cards:[];
- cards.forEach(c=>out.push({time:val(c.time),type:/red/i.test(val(c.card))?'🟥 Espulsione':'🟨 Ammonizione',text:[val(c.home_fault)||val(c.away_fault)||'Giocatore non indicato',val(c.card)].filter(Boolean).join(' · ')}));
+ cards.forEach(c=>{
+  const red=/red/i.test(val(c.card));const side=val(c.home_fault)?'home':val(c.away_fault)?'away':'';
+  out.push({time:val(c.time),kind:red?'red':'card',side,type:red?'🟥 Espulsione':'🟨 Ammonizione',text:[val(c.home_fault)||val(c.away_fault)||'Giocatore non indicato',val(c.card)].filter(Boolean).join(' · ')});
+ });
  const subs=m.substitutions||{};
- ['home','away'].forEach(side=>(Array.isArray(subs[side])?subs[side]:[]).forEach(sub=>out.push({time:val(sub.time),type:'🔄 Cambio',text:`${name(m,side)} · ${val(sub.substitution)||'Sostituzione'}`})));
- out.sort((a,b)=>(parseInt(a.time)||0)-(parseInt(b.time)||0));
- $('events').innerHTML=out.length?'<ul class="timeline">'+out.map(e=>`<li><span class="minute">${safe(e.time)}'</span><span class="tag">${safe(e.type)}</span><span class="eventtext">${safe(e.text)}</span></li>`).join('')+'</ul>':'<p class="muted">Nessun evento disponibile.</p>';
+ ['home','away'].forEach(side=>(Array.isArray(subs[side])?subs[side]:[]).forEach(sub=>out.push({time:val(sub.time),kind:'sub',side,type:'🔄 Cambio',text:val(sub.substitution)||'Sostituzione'})));
+ out.sort((a,b)=>(parseInt(a.time,10)||0)-(parseInt(b.time,10)||0));
+ $('events').innerHTML=out.length?'<ul class="timeline">'+out.map(e=>{
+  const team=e.side?`<span class="event-team">${safe(name(m,e.side))}</span>`:'';
+  const cls=['event-'+e.kind,e.side?'event-'+e.side:''].join(' ');
+  const minute=val(e.time).includes("'")?val(e.time):val(e.time)+"'";
+  return `<li class="${cls}"><span class="minute">${safe(minute)}</span><span class="tag">${safe(e.type)}</span><span class="eventtext">${team}${safe(e.text)}</span></li>`;
+ }).join('')+'</ul>':'<p class="muted">Nessun evento disponibile.</p>';
 }
+
 function render(){
  const m=matches.find(x=>val(x.match_id)===selectedId);
  if(!m){$('score').textContent='Nessuna partita disponibile';$('status').textContent='';$('message').textContent='';return;}
@@ -128,7 +167,7 @@ async function load(){
   for(const m of matches){const o=document.createElement('option');o.value=val(m.match_id);o.textContent=`${dateText(m)} · ${val(m.match_time)} · ${name(m,'home')} - ${name(m,'away')}`;select.appendChild(o);}
   selectedId=matches.some(m=>val(m.match_id)===previous)?previous:
     val((matches.find(m=>!isFinished(m))||matches[matches.length-1]||{}).match_id);
-  select.value=selectedId;render();
+  select.value=selectedId;render();$('lastUpdated').textContent='Dati aggiornati alle '+new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
  }catch(err){$('message').textContent='Impossibile aggiornare i dati: '+err.message;$('message').classList.add('error');}
  finally{requestInFlight=false;$('refresh').disabled=false;}
 }
