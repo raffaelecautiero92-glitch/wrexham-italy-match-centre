@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Wrexham Italy Match Centre 2.0</title>
+<title>Wrexham Italy Match Centre 3.0</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#10151c;color:#f6f8fc;font:15px Arial,sans-serif;padding:25px 12px;text-align:center}
 main{max-width:1080px;margin:auto}h1{color:#ff4949;font-size:clamp(23px,4vw,34px);margin:10px 0 22px}
@@ -18,16 +18,18 @@ h2{font-size:clamp(22px,4vw,36px);margin:20px 0 7px}.status{color:#ffcc68;font-s
 .panel{background:#252e3a;border-radius:7px;padding:14px;margin:12px 0}.teams{display:grid;grid-template-columns:1fr 1fr;gap:14px;text-align:left}.teams h3{margin:0 0 12px}.teams ol{margin:0;padding-left:28px;line-height:1.9}.teams li{padding-left:3px}.events{text-align:left}.events ul{padding-left:20px;line-height:1.8}
 .notice{color:#f7ce78;font-size:13px}.error{color:#ff9999}.footer{color:#aebed2;font-size:12px;line-height:1.6;margin:20px 0}
 @media(max-width:620px){.teams{grid-template-columns:1fr}.player-name{font-size:8px}.pitch{margin-top:18px}.player{width:22px;height:22px;font-size:10px}}
+.scoreboard{display:flex;justify-content:center;align-items:center;gap:15px;margin:18px auto 6px}.crest{width:54px;height:54px;object-fit:contain;display:none}.live-pill{display:inline-block;background:#b51d32;color:white;border-radius:30px;padding:5px 12px;font-weight:800;animation:pulse 2s infinite}@keyframes pulse{50%{opacity:.6}}.pitch{border-radius:5px;box-shadow:0 12px 35px #0005}.player{z-index:2}.player-name{max-width:78px;overflow:hidden;text-overflow:ellipsis;background:#10151cdd;padding:2px 4px;border-radius:4px;top:105%;font-size:10px}.player.home{background:#ce2435}.player.away{background:#2466d6}.timeline{list-style:none;padding:0!important;display:flex;flex-direction:column;gap:8px}.timeline li{display:flex;align-items:center;gap:12px;background:#18212c;border:1px solid #394453;border-radius:8px;padding:11px 13px;line-height:1.45}.timeline .minute{flex:0 0 52px;color:#ffcf74;font-weight:800}.timeline .eventtext{flex:1}.timeline .tag{font-size:11px;color:#d2dfed;background:#364456;padding:3px 8px;border-radius:12px}.pitch-caption{font-size:12px;color:#c0cee0;margin-top:-8px;margin-bottom:14px}@media(max-width:620px){.crest{width:32px;height:32px}.scoreboard{gap:6px}.player-name{max-width:46px;font-size:8px}.timeline li{padding:8px}}
 </style>
 </head>
 <body><main>
 <h1>WREXHAM ITALY MATCH CENTRE</h1>
 <div class="toolbar"><label for="matchSelect">Partita:</label><select id="matchSelect"><option>Caricamento...</option></select><button id="refresh">Aggiorna</button></div>
-<h2 id="score">Caricamento...</h2><div id="status" class="status"></div><div id="meta" class="meta"></div>
+<div class="scoreboard"><img class="crest" id="homeCrest" alt="Stemma squadra di casa"><h2 id="score">Caricamento...</h2><img class="crest" id="awayCrest" alt="Stemma squadra ospite"></div><div id="status" class="status"></div><div id="meta" class="meta"></div>
 <div id="message" class="notice" aria-live="polite"></div>
 <div class="pitch" id="pitch" aria-label="Schema tattico illustrativo">
 <div class="half"></div><div class="circle"></div><div class="boxleft"></div><div class="boxright"></div><div class="goalleft"></div><div class="goalright"></div>
 </div>
+<div class="pitch-caption">Schema tattico illustrativo: non rappresenta il tracciamento dei giocatori in tempo reale.</div>
 <div class="panel" id="summary">Seleziona una partita.</div>
 <div class="teams">
 <section class="panel"><h3 id="homeTitle">Squadra di casa</h3><div id="homeList"></div><div id="homeBench"></div></section>
@@ -57,15 +59,16 @@ function positions(formationText){
   if(parts.length<2||parts.reduce((a,b)=>a+b,0)!==10)return [4,4,2];
   return parts;
 }
+function setCrest(id,url,team){const img=$(id);img.style.display='none';img.removeAttribute('src');if(!/^https:\/\//i.test(val(url)))return;img.alt='Stemma '+team;img.onload=()=>img.style.display='block';img.onerror=()=>img.style.display='none';img.src=url;}
 function drawSide(m,side){
  const lineup=getLineup(m,side);
  if(lineup.length<11)return;
  // API-Football's lineup_position is an ordering index, not a live pitch coordinate.
  const sorted=[...lineup].sort((a,b)=>(Number(a.lineup_position)||99)-(Number(b.lineup_position)||99)).slice(0,11);
  const rows=positions(formation(m,side));
- const coords=[{x:8,y:50}];
+ const coords=[{x:6,y:50}];
  rows.forEach((count,r)=>{
-   for(let j=0;j<count;j++)coords.push({x:19+(r+1)*62/(rows.length+1),y:(j+1)*100/(count+1)});
+   for(let j=0;j<count;j++)coords.push({x:12+(r+1)*32/(rows.length+1),y:(j+1)*100/(count+1)});
  });
  sorted.forEach((p,i)=>{
    const c=coords[i];if(!c)return;
@@ -82,13 +85,13 @@ function drawSide(m,side){
 function renderEvents(m){
  const out=[];
  const goals=Array.isArray(m.goalscorer)?m.goalscorer:[];
- goals.forEach(g=>out.push({time:val(g.time),text:`⚽ ${val(g.home_scorer)||val(g.away_scorer)||'Marcatore non indicato'}${val(g.info)?' · '+val(g.info):''}`}));
+ goals.forEach(g=>out.push({time:val(g.time),type:'⚽ Gol',text:[val(g.home_scorer)||val(g.away_scorer)||'Marcatore non indicato',val(g.info)].filter(Boolean).join(' · ')}));
  const cards=Array.isArray(m.cards)?m.cards:[];
- cards.forEach(c=>out.push({time:val(c.time),text:`${/red/i.test(val(c.card))?'🟥':'🟨'} ${val(c.home_fault)||val(c.away_fault)||'Giocatore non indicato'} · ${val(c.card)}`}));
+ cards.forEach(c=>out.push({time:val(c.time),type:/red/i.test(val(c.card))?'🟥 Espulsione':'🟨 Ammonizione',text:[val(c.home_fault)||val(c.away_fault)||'Giocatore non indicato',val(c.card)].filter(Boolean).join(' · ')}));
  const subs=m.substitutions||{};
- ['home','away'].forEach(side=>(Array.isArray(subs[side])?subs[side]:[]).forEach(s=>out.push({time:val(s.time),text:`🔄 ${name(m,side)}: ${val(s.substitution)||'Sostituzione'}`})));
+ ['home','away'].forEach(side=>(Array.isArray(subs[side])?subs[side]:[]).forEach(sub=>out.push({time:val(sub.time),type:'🔄 Cambio',text:`${name(m,side)} · ${val(sub.substitution)||'Sostituzione'}`})));
  out.sort((a,b)=>(parseInt(a.time)||0)-(parseInt(b.time)||0));
- $('events').innerHTML=out.length?'<ul>'+out.map(e=>`<li><strong>${safe(e.time)}'</strong> ${safe(e.text)}</li>`).join('')+'</ul>':'<p class="muted">Nessun evento disponibile.</p>';
+ $('events').innerHTML=out.length?'<ul class="timeline">'+out.map(e=>`<li><span class="minute">${safe(e.time)}'</span><span class="tag">${safe(e.type)}</span><span class="eventtext">${safe(e.text)}</span></li>`).join('')+'</ul>':'<p class="muted">Nessun evento disponibile.</p>';
 }
 function render(){
  const m=matches.find(x=>val(x.match_id)===selectedId);
@@ -96,7 +99,8 @@ function render(){
  const h=name(m,'home'),a=name(m,'away'),finished=isFinished(m),live=isLive(m);
  const hs=val(m.match_hometeam_score),as=val(m.match_awayteam_score);
  $('score').textContent=`${h} ${finished||live?(hs||'0')+' - '+(as||'0'):'– - –'} ${a}`;
- $('status').textContent=state(m);
+ $('status').innerHTML=live?'<span class="live-pill">● IN DIRETTA</span>':safe(state(m));
+ setCrest('homeCrest',m.team_home_badge,h);setCrest('awayCrest',m.team_away_badge,a);
  $('meta').textContent=[dateText(m),val(m.match_time),val(m.match_stadium)].filter(Boolean).join(' · ');
  $('summary').textContent=`${state(m)} · ${h} vs ${a}`;
  document.querySelectorAll('.player').forEach(p=>p.remove());
@@ -108,6 +112,7 @@ function render(){
  $('homeBench').innerHTML='<h4>Panchina</h4>'+listPlayers(getBench(m,'home'));
  $('awayBench').innerHTML='<h4>Panchina</h4>'+listPlayers(getBench(m,'away'));
  drawSide(m,'home');drawSide(m,'away');
+ $('message').classList.remove('error');
  $('message').textContent=home.length<11||away.length<11?'Formazioni non ancora complete: il campo rimane vuoto per le squadre senza 11 titolari confermati.':'Disposizione tattica illustrativa basata sui titolari e sul modulo comunicati dall’API.';
  renderEvents(m);
 }
