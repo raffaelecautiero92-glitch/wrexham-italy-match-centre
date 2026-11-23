@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wrexham Italy Match Centre</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #10151c;
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 24px 12px;
+}
+.container {
+  max-width: 850px;
+  margin: auto;
+}
+h1 { color: #ff4040; }
+.score {
+  font-size: clamp(22px, 5vw, 38px);
+  font-weight: bold;
+  margin: 20px 0 8px;
+}
+.clock { color: #ffcc66; font-size: 22px; }
+.pitch {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 105 / 68;
+  background: repeating-linear-gradient(
+    90deg, #176c38 0%, #176c38 10%,
+    #207c43 10%, #207c43 20%
+  );
+  border: 3px solid white;
+  margin-top: 25px;
+  overflow: hidden;
+}
+.midline {
+  position: absolute;
+  left: 50%;
+  height: 100%;
+  border-left: 2px solid white;
+}
+.circle {
+  position: absolute;
+  width: 18%;
+  aspect-ratio: 1;
+  border: 2px solid white;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.area {
+  position: absolute;
+  top: 20%;
+  height: 60%;
+  width: 16%;
+  border: 2px solid white;
+}
+.left { left: 0; border-left: 0; }
+.right { right: 0; border-right: 0; }
+.ball {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  font-size: clamp(16px, 3vw, 27px);
+  transform: translate(-50%, -50%);
+  transition: left 1.8s ease, top 1.8s ease;
+  z-index: 2;
+}
+.player {
+  position: absolute;
+  width: 2.6%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid white;
+  transform: translate(-50%, -50%);
+  transition: left 1.8s ease, top 1.8s ease;
+}
+.red { background: #e52232; }
+.blue { background: #2676ee; }
+.status {
+  margin-top: 20px;
+  padding: 14px;
+  background: #252d38;
+  border-radius: 8px;
+  font-size: 20px;
+}
+.note {
+  color: #aab5c3;
+  font-size: 13px;
+  margin-top: 15px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>WREXHAM ITALY MATCH CENTRE</h1>
+  <div class="score">WREXHAM 0 - 0 OPPONENT</div>
+  <div class="clock" id="clock">00:00</div>
+
+  <div class="pitch" id="pitch">
+    <div class="midline"></div>
+    <div class="circle"></div>
+    <div class="area left"></div>
+    <div class="area right"></div>
+    <div class="ball" id="ball">⚽</div>
+  </div>
+
+  <div class="status" id="status">
+    In attesa dell'azione...
+  </div>
+  <div class="note">
+    DEMO: movimenti simulati, non dati di una partita reale.
+  </div>
+</div>
+
+<script>
+const pitch = document.getElementById("pitch");
+const ball = document.getElementById("ball");
+const statusBox = document.getElementById("status");
+const clock = document.getElementById("clock");
+
+let seconds = 0;
+let step = 0;
+
+const players = [];
+
+for (let i = 0; i < 10; i++) {
+  const p = document.createElement("div");
+  p.className = "player " + (i < 5 ? "red" : "blue");
+  pitch.appendChild(p);
+  players.push(p);
+}
+
+const actions = [
+  { x: 25, y: 50, text: "Wrexham costruisce l'azione" },
+  { x: 48, y: 35, text: "Wrexham avanza a centrocampo" },
+  { x: 75, y: 30, text: "Attacco pericoloso Wrexham!" },
+  { x: 88, y: 48, text: "Wrexham vicino alla porta!" },
+  { x: 55, y: 60, text: "Gli avversari recuperano palla" },
+  { x: 22, y: 65, text: "Attacco della squadra avversaria" }
+];
+
+function moveAction() {
+  const action = actions[step % actions.length];
+  ball.style.left = action.x + "%";
+  ball.style.top = action.y + "%";
+  statusBox.textContent = action.text;
+
+  players.forEach((p, i) => {
+    const offsetX = ((i * 17) % 29) - 14;
+    const offsetY = ((i * 23) % 45) - 22;
+    const baseX = i < 5 ? action.x - 13 : action.x + 13;
+    p.style.left = Math.max(4, Math.min(96, baseX + offsetX)) + "%";
+    p.style.top = Math.max(5, Math.min(95, action.y + offsetY)) + "%";
+  });
+
+  step++;
+}
+
+function updateClock() {
+  seconds++;
+  const minutes = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const secs = String(seconds % 60).padStart(2, "0");
+  clock.textContent = minutes + ":" + secs;
+}
+
+moveAction();
+setInterval(moveAction, 3500);
+setInterval(updateClock, 1000);
+</script>
+</body>
+</html>
