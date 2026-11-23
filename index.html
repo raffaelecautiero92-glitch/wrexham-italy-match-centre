@@ -1,178 +1,27 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wrexham Italy Match Centre</title>
 <style>
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: #10151c;
-  color: white;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  padding: 24px 12px;
-}
-.container {
-  max-width: 850px;
-  margin: auto;
-}
-h1 { color: #ff4040; }
-.score {
-  font-size: clamp(22px, 5vw, 38px);
-  font-weight: bold;
-  margin: 20px 0 8px;
-}
-.clock { color: #ffcc66; font-size: 22px; }
-.pitch {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 105 / 68;
-  background: repeating-linear-gradient(
-    90deg, #176c38 0%, #176c38 10%,
-    #207c43 10%, #207c43 20%
-  );
-  border: 3px solid white;
-  margin-top: 25px;
-  overflow: hidden;
-}
-.midline {
-  position: absolute;
-  left: 50%;
-  height: 100%;
-  border-left: 2px solid white;
-}
-.circle {
-  position: absolute;
-  width: 18%;
-  aspect-ratio: 1;
-  border: 2px solid white;
-  border-radius: 50%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-.area {
-  position: absolute;
-  top: 20%;
-  height: 60%;
-  width: 16%;
-  border: 2px solid white;
-}
-.left { left: 0; border-left: 0; }
-.right { right: 0; border-right: 0; }
-.ball {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  font-size: clamp(16px, 3vw, 27px);
-  transform: translate(-50%, -50%);
-  transition: left 1.8s ease, top 1.8s ease;
-  z-index: 2;
-}
-.player {
-  position: absolute;
-  width: 2.6%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  border: 1px solid white;
-  transform: translate(-50%, -50%);
-  transition: left 1.8s ease, top 1.8s ease;
-}
-.red { background: #e52232; }
-.blue { background: #2676ee; }
-.status {
-  margin-top: 20px;
-  padding: 14px;
-  background: #252d38;
-  border-radius: 8px;
-  font-size: 20px;
-}
-.note {
-  color: #aab5c3;
-  font-size: 13px;
-  margin-top: 15px;
-}
+*{box-sizing:border-box}body{margin:0;background:#10151c;color:#fff;font-family:Arial,sans-serif;text-align:center;padding:24px 12px}.container{max-width:850px;margin:auto}h1{color:#ff4040;font-size:clamp(23px,5vw,36px)}.score{font-size:clamp(22px,5vw,38px);font-weight:bold;margin:20px 0 8px}.clock{color:#ffcc66;font-size:21px}.toolbar{margin:18px auto;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}select,button{background:#252d38;color:white;border:1px solid #687382;border-radius:7px;padding:10px;font-size:15px;max-width:100%}button{cursor:pointer}.pitch{position:relative;width:100%;aspect-ratio:105/68;background:repeating-linear-gradient(90deg,#176c38 0%,#176c38 10%,#207c43 10%,#207c43 20%);border:3px solid white;margin-top:25px;overflow:hidden}.midline{position:absolute;left:50%;height:100%;border-left:2px solid white}.circle{position:absolute;width:18%;aspect-ratio:1;border:2px solid white;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%)}.area{position:absolute;top:20%;height:60%;width:16%;border:2px solid white}.left{left:0;border-left:0}.right{right:0;border-right:0}.ball{position:absolute;left:50%;top:50%;font-size:clamp(16px,3vw,27px);transform:translate(-50%,-50%);transition:left 1.8s ease,top 1.8s ease;z-index:2}.player{position:absolute;width:2.6%;aspect-ratio:1;border-radius:50%;border:1px solid white;transform:translate(-50%,-50%);transition:left 1.8s ease,top 1.8s ease}.red{background:#e52232}.blue{background:#2676ee}.status{margin-top:20px;padding:14px;background:#252d38;border-radius:8px;font-size:18px}.note{color:#aab5c3;font-size:13px;margin-top:15px;line-height:1.5}.error{color:#ff9d9d}.info{color:#b8c7d8;font-size:14px;margin-top:10px}
 </style>
 </head>
-<body>
-<div class="container">
-  <h1>WREXHAM ITALY MATCH CENTRE</h1>
-  <div class="score">WREXHAM 0 - 0 OPPONENT</div>
-  <div class="clock" id="clock">00:00</div>
-
-  <div class="pitch" id="pitch">
-    <div class="midline"></div>
-    <div class="circle"></div>
-    <div class="area left"></div>
-    <div class="area right"></div>
-    <div class="ball" id="ball">⚽</div>
-  </div>
-
-  <div class="status" id="status">
-    In attesa dell'azione...
-  </div>
-  <div class="note">
-    DEMO: movimenti simulati, non dati di una partita reale.
-  </div>
-</div>
-
+<body><main class="container"><h1>WREXHAM ITALY MATCH CENTRE</h1><div class="toolbar"><label for="matchSelect">Partita: </label><select id="matchSelect" aria-label="Seleziona partita"><option>Caricamento...</option></select><button id="refresh">Aggiorna</button></div><div class="score" id="score">Caricamento partite...</div><div class="clock" id="clock">In attesa dei dati</div><div class="info" id="details"></div><div class="pitch" id="pitch"><div class="midline"></div><div class="circle"></div><div class="area left"></div><div class="area right"></div><div class="ball" id="ball">⚽</div></div><div class="status" id="status">Connessione ai risultati...</div><div class="note">I risultati e gli stati provengono da API-Football tramite Cloudflare. Le animazioni sul campo sono illustrative e NON rappresentano la posizione reale dei calciatori o del pallone.</div></main>
 <script>
-const pitch = document.getElementById("pitch");
-const ball = document.getElementById("ball");
-const statusBox = document.getElementById("status");
-const clock = document.getElementById("clock");
-
-let seconds = 0;
-let step = 0;
-
-const players = [];
-
-for (let i = 0; i < 10; i++) {
-  const p = document.createElement("div");
-  p.className = "player " + (i < 5 ? "red" : "blue");
-  pitch.appendChild(p);
-  players.push(p);
-}
-
-const actions = [
-  { x: 25, y: 50, text: "Wrexham costruisce l'azione" },
-  { x: 48, y: 35, text: "Wrexham avanza a centrocampo" },
-  { x: 75, y: 30, text: "Attacco pericoloso Wrexham!" },
-  { x: 88, y: 48, text: "Wrexham vicino alla porta!" },
-  { x: 55, y: 60, text: "Gli avversari recuperano palla" },
-  { x: 22, y: 65, text: "Attacco della squadra avversaria" }
-];
-
-function moveAction() {
-  const action = actions[step % actions.length];
-  ball.style.left = action.x + "%";
-  ball.style.top = action.y + "%";
-  statusBox.textContent = action.text;
-
-  players.forEach((p, i) => {
-    const offsetX = ((i * 17) % 29) - 14;
-    const offsetY = ((i * 23) % 45) - 22;
-    const baseX = i < 5 ? action.x - 13 : action.x + 13;
-    p.style.left = Math.max(4, Math.min(96, baseX + offsetX)) + "%";
-    p.style.top = Math.max(5, Math.min(95, action.y + offsetY)) + "%";
-  });
-
-  step++;
-}
-
-function updateClock() {
-  seconds++;
-  const minutes = String(Math.floor(seconds / 60)).padStart(2, "0");
-  const secs = String(seconds % 60).padStart(2, "0");
-  clock.textContent = minutes + ":" + secs;
-}
-
-moveAction();
-setInterval(moveAction, 3500);
-setInterval(updateClock, 1000);
-</script>
-</body>
-</html>
+'use strict';
+const API='https://wrexham-italy-api.raffaelecautiero92.workers.dev/';
+const pitch=document.getElementById('pitch'),ball=document.getElementById('ball'),statusBox=document.getElementById('status'),clock=document.getElementById('clock'),score=document.getElementById('score'),details=document.getElementById('details'),select=document.getElementById('matchSelect');
+let matches=[],selectedId=null,step=0;
+const players=[];
+for(let i=0;i<10;i++){const p=document.createElement('div');p.className='player '+(i<5?'red':'blue');pitch.appendChild(p);players.push(p)}
+const actions=[{x:25,y:50},{x:48,y:35},{x:75,y:30},{x:88,y:48},{x:55,y:60},{x:22,y:65}];
+function animate(){const a=actions[step++%actions.length];ball.style.left=a.x+'%';ball.style.top=a.y+'%';players.forEach((p,i)=>{const dx=((i*17)%29)-14,dy=((i*23)%45)-22,base=i<5?a.x-13:a.x+13;p.style.left=Math.max(4,Math.min(96,base+dx))+'%';p.style.top=Math.max(5,Math.min(95,a.y+dy))+'%'})}
+function value(v){return v===null||v===undefined||v===''?'–':String(v)}
+function formatDate(m){const date=m.match_date,time=m.match_time;if(!date)return 'Data da confermare';const parts=date.split('-');return parts.length===3?`${parts[2]}/${parts[1]}/${parts[0]}${time?' · '+time:''}`:date}
+function state(m){const s=String(m.match_status||'').trim();const live=String(m.match_live||'0')==='1';if(live)return '🔴 IN DIRETTA';if(!s||s==='Not Started'||s==='NS')return 'Da giocare';if(['Finished','FT','After Pen.','After Extra Time','AET'].includes(s))return 'Terminata';return s}
+function render(){const m=matches.find(x=>String(x.match_id)===String(selectedId));if(!m){score.textContent='Nessuna partita disponibile';clock.textContent='';details.textContent='';statusBox.textContent='Nessun dato';return}const home=m.match_hometeam_name||'Casa',away=m.match_awayteam_name||'Trasferta';const hasScores=m.match_hometeam_score!==''&&m.match_hometeam_score!=null&&m.match_awayteam_score!==''&&m.match_awayteam_score!=null;score.textContent=`${home} ${hasScores?m.match_hometeam_score:'–'} - ${hasScores?m.match_awayteam_score:'–'} ${away}`;clock.textContent=state(m);details.textContent=`${formatDate(m)} · ${m.match_stadium||'Stadio non indicato'}`;statusBox.textContent=`${state(m)} · ${home} vs ${away}`}
+function populate(){const old=selectedId;select.replaceChildren();for(const m of matches){const option=document.createElement('option');option.value=String(m.match_id);option.textContent=`${formatDate(m)} · ${m.match_hometeam_name||'?'} - ${m.match_awayteam_name||'?'}`;select.appendChild(option)}if(matches.some(m=>String(m.match_id)===String(old)))selectedId=old;else{const live=matches.find(m=>String(m.match_live)==='1');const upcoming=matches.find(m=>!m.match_status||m.match_status==='Not Started'||m.match_status==='NS');selectedId=String((live||upcoming||matches[0])?.match_id||'')}select.value=selectedId;render()}
+async function load(){document.getElementById('refresh').disabled=true;try{const res=await fetch(API,{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();if(data.error)throw new Error(typeof data.error==='string'?data.error:'Errore API');if(!Array.isArray(data.matches))throw new Error('Formato dati inatteso');matches=data.matches;populate()}catch(e){if(matches.length){statusBox.textContent='Aggiornamento non riuscito: '+e.message+' · Visualizzazione ultimi dati disponibili';statusBox.classList.add('error')}else{score.textContent='Impossibile caricare le partite';clock.textContent='';statusBox.textContent='Errore: '+e.message;statusBox.classList.add('error')}}finally{document.getElementById('refresh').disabled=false}}
+select.addEventListener('change',()=>{selectedId=select.value;statusBox.classList.remove('error');render()});document.getElementById('refresh').addEventListener('click',load);animate();setInterval(animate,3500);setInterval(load,30000);load();
+</script></body></html>
